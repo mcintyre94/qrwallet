@@ -5,6 +5,8 @@ type UseQrScannerProps = {
     onScanned: (scanned: string) => void
 }
 
+QrScanner.scanImage
+
 export function useQrScanner({ onScanned }: UseQrScannerProps) {
     const videoRef = useRef<HTMLVideoElement>()
     const [qrScanner, setQrScanner] = useState<QrScanner | undefined>(undefined)
@@ -47,10 +49,30 @@ export function useQrScanner({ onScanned }: UseQrScannerProps) {
         onScanned('');
     }
 
+    async function scanImage(image: Parameters<typeof QrScanner.scanImage>[0]) {
+        setIsScanning(true);
+        try {
+            const engine = await QrScanner.createQrEngine();
+            const result = await QrScanner.scanImage(image, {
+                returnDetailedScanResult: true,
+                // qrEngine: engine,
+                // alsoTryWithoutScanRegion: true,
+            });
+            onScanned(result.data);
+            return true;
+        } catch {
+            // throws if no QR found
+            return false;
+        } finally {
+            setIsScanning(false);
+        }
+    }
+
     return {
         isScanning,
         startScanning,
         cancelScanning,
+        scanImage,
         videoRef
     }
 }

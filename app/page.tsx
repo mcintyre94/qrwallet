@@ -1,7 +1,7 @@
 'use client'
 
-import { Anchor, AppShell, Button, Center, Container, Group, Image, Stack, Text, TextInput } from "@mantine/core";
-import { IconBrandGithub, IconScan } from "@tabler/icons-react";
+import { Anchor, AppShell, Button, Center, Container, FileButton, FileInput, Flex, Group, Image, Stack, Text, TextInput } from "@mantine/core";
+import { IconBrandGithub, IconFile, IconScan } from "@tabler/icons-react";
 import { MutableRefObject, useEffect, useState } from "react";
 import { QRCodeSVG } from 'qrcode.react';
 import { useDebounce } from 'use-debounce';
@@ -25,6 +25,7 @@ export default function Home() {
     isScanning,
     startScanning,
     cancelScanning,
+    scanImage,
     videoRef
   } = useQrScanner({
     onScanned: (scanned: string) => {
@@ -48,8 +49,19 @@ export default function Home() {
                   label="Data to encode"
                   value={toEncode}
                   onChange={(e) => setToEncode(e.currentTarget.value)}
-                  rightSection={<IconScan onClick={startScanning} />}
                 />
+                <Group gap='md'>
+                  <Button leftSection={<IconScan />} onClick={startScanning}>Scan with camera</Button>
+                  <FileButton accept="image/png,image/jpeg" onChange={async (e) => {
+                    if (e) {
+                      const result = await scanImage(e)
+                      console.log({ result });
+                      if (!result) alert('No QR code found in image. Try cropping the image and try again.')
+                    }
+                  }}>
+                    {(props) => <Button leftSection={<IconFile />} {...props}>Scan from image</Button>}
+                  </FileButton>
+                </Group>
               </Stack>
             </form>
 
