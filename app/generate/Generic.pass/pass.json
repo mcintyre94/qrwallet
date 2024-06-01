@@ -1,0 +1,10 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.com.callum.qrwallet",
+  "teamIdentifier": "79X2Z5TT45",
+  "organizationName": "QRWallet",
+  "foregroundColor": "rgb(0, 0, 0)",
+  "labelColor": "rgb(0, 0, 0)",
+  "backgroundColor": "rgb(173, 216, 230)",
+  "generic": {}
+}
