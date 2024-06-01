@@ -1,10 +1,11 @@
 'use client'
 
-import { Anchor, AppShell, Center, Container, Group, Image, Stack, Text, TextInput } from "@mantine/core";
-import { IconBrandGithub } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { Anchor, AppShell, Button, Center, Container, Group, Image, Stack, Text, TextInput } from "@mantine/core";
+import { IconBrandGithub, IconScan } from "@tabler/icons-react";
+import { MutableRefObject, useEffect, useState } from "react";
 import { QRCodeSVG } from 'qrcode.react';
 import { useDebounce } from 'use-debounce';
+import { useQrScanner } from "./hooks/useQrScanner";
 
 export default function Home() {
   let [origin, setOrigin] = useState('');
@@ -20,15 +21,36 @@ export default function Home() {
   // Debounce the QR URL so the image doesn't update as you type
   const [qrUrl] = useDebounce(fullUrl, 1000);
 
+  const {
+    isScanning,
+    startScanning,
+    cancelScanning,
+    videoRef
+  } = useQrScanner({
+    onScanned: (scanned: string) => {
+      setToEncode(scanned);
+    }
+  })
+
   return (
     <AppShell>
       <AppShell.Main>
+        <video ref={videoRef as MutableRefObject<HTMLVideoElement>} />
+
         <Container p='xl'>
           <Stack gap='xl'>
 
             <form onSubmit={(e) => e.preventDefault()}>
-              <TextInput label="Label" onChange={(e) => setLabel(e.currentTarget.value)} />
-              <TextInput label="Data to encode" onChange={(e) => setToEncode(e.currentTarget.value)} />
+              <Stack gap='md'>
+                {isScanning ? <Button onClick={cancelScanning} style={{ maxWidth: 'fit-content' }}>Cancel scanning</Button> : null}
+                <TextInput label="Label" onChange={(e) => setLabel(e.currentTarget.value)} />
+                <TextInput
+                  label="Data to encode"
+                  value={toEncode}
+                  onChange={(e) => setToEncode(e.currentTarget.value)}
+                  rightSection={<IconScan onClick={startScanning} />}
+                />
+              </Stack>
             </form>
 
             {active ? (
