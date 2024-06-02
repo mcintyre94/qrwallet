@@ -83,7 +83,7 @@ export default function Home() {
         </Container>
       </AppShell.Main>
 
-      <AppShell.Footer>
+      <AppShell.Footer pb={24}>
         <Center>
           <Anchor href='https://github.com/mcintyre94/qrwallet' underline='never' c='white'>
             <Group>
