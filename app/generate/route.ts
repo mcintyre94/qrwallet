@@ -1,12 +1,14 @@
-import { readFileSync } from "node:fs";
 import { v4 as uuidv4 } from "uuid";
 import { PKPass } from "passkit-generator";
 
-async function createPass(label: string, toEncode: string) {
+import * as certs from "./certs.enc";
+import { decrypt } from "../../encrypt/encryption";
+
+async function createPass(key: Buffer, label: string, toEncode: string) {
   const routeDir = `${process.cwd()}/app/generate`;
-  const wwdr = readFileSync(`${routeDir}/certs/apple-wwdr.pem`);
-  const signerCert = readFileSync(`${routeDir}/certs/signerCert.pem`);
-  const signerKey = readFileSync(`${routeDir}/certs/signerKey.pem`);
+  const wwdr = decrypt({ data: certs.wwdr, key });
+  const signerCert = decrypt({ data: certs.signerCert, key });
+  const signerKey = decrypt({ data: certs.signerKey, key });
 
   const pass = await PKPass.from(
     {
@@ -50,6 +52,19 @@ async function createPass(label: string, toEncode: string) {
 }
 
 export async function GET(request: Request) {
+  const secretsKeyBase64 = process.env.SECRETS_KEY;
+  if (!secretsKeyBase64) {
+    return Response.json(
+      {
+        error: "Missing certificate decryption key",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+  const secretsKey = Buffer.from(secretsKeyBase64, "base64");
+
   const url = new URL(request.url);
   const label = url.searchParams.get("label");
   if (!label) {
@@ -76,6 +91,7 @@ export async function GET(request: Request) {
   }
 
   const pass = await createPass(
+    secretsKey,
     decodeURIComponent(label),
     decodeURIComponent(toEncode)
   );
