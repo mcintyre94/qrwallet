@@ -85,7 +85,7 @@ export default function Home() {
 
       <AppShell.Footer>
         <Center>
-          <Anchor href='https://github.com/mcintyre94/pass-generator' underline='never' c='white'>
+          <Anchor href='https://github.com/mcintyre94/qrwallet' underline='never' c='white'>
             <Group>
               <IconBrandGithub />
               <Text>Source on Github</Text>
