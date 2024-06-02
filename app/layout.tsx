@@ -5,7 +5,7 @@ import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 
 export const metadata: Metadata = {
-  title: "Pass Generator",
+  title: "QR Wallet",
   description: "Generate a Pass for Apple Wallet",
 };
 
